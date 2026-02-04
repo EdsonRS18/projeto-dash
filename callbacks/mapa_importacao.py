@@ -296,6 +296,11 @@ def update_mapa_importacao(
     centro_lat = nodes['LAT'].mean() if not nodes.empty else -14.235
     centro_lon = nodes['LON'].mean() if not nodes.empty else -51.925
 
+    title_cfg = build_responsive_title(
+    main_title=f"<b>Importações para {estado_selecionado}<b>",
+    subtitle=f"<b>Ano {selected_year}<b>"
+)
+
     fig.update_layout(
         mapbox_style="open-street-map",
         mapbox_zoom=4,
@@ -303,10 +308,7 @@ def update_mapa_importacao(
         margin={"r": 0, "t": 80, "l": 0, "b": 0},
         height=700,
         hovermode='closest',
-        title=dict(
-            text=f"<b>Importações para {estado_selecionado} — Ano {selected_year}</b>",
-            x=0.5
-        ),
+        title=title_cfg,
         legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -314,7 +316,11 @@ def update_mapa_importacao(
             xanchor="center",
             x=0.5,
             bgcolor="rgba(255,255,255,0.85)"
-        )
+        ),
+        plot_bgcolor=theme_colors["background_color"],
+        paper_bgcolor=theme_colors["background_color"],
+        font=dict(color=theme_colors["font_color"]),
+        template=theme_colors["template"],
     )
 
     return fig

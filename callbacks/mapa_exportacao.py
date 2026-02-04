@@ -2,7 +2,7 @@ from dash import callback, Input, Output
 import plotly.graph_objects as go
 import pandas as pd
 from data import store
-from utils.visualization import get_theme_colors
+from utils.visualization import get_theme_colors,build_responsive_title
 from data.constants import SankeyDirection
 
 
@@ -266,6 +266,11 @@ def update_mapa_exportacao(
     centro_lat = nodes['LAT'].mean() if not nodes.empty else -14.235
     centro_lon = nodes['LON'].mean() if not nodes.empty else -51.925
 
+    title_cfg = build_responsive_title(
+    main_title=f"<b>Exportações a partir de {estado_selecionado}<b>",
+    subtitle=f"<b>Ano {selected_year}<b>"
+)
+
     fig.update_layout(
         mapbox_style="open-street-map",
         mapbox_zoom=4,
@@ -273,18 +278,18 @@ def update_mapa_exportacao(
         height=700,
         margin={"r": 0, "t": 80, "l": 0, "b": 0},
         hovermode='closest',
-        title=dict(
-            text=f"<b>Exportações a partir de {estado_selecionado} — Ano {selected_year}</b>",
-            x=0.5
-        ),
+        title=title_cfg,
         legend=dict(
             orientation="h",
             y=0.95,
             x=0.5,
             xanchor="center",
             yanchor="bottom",
-            bgcolor="rgba(255,255,255,0.85)"
-        )
+        ),
+        plot_bgcolor=theme_colors["background_color"],
+        paper_bgcolor=theme_colors["background_color"],
+        font=dict(color=theme_colors["font_color"]),
+        template=theme_colors["template"],
     )
 
     return fig
