@@ -190,10 +190,20 @@ def update_exported_sankey(
         arrangement='fixed'
     ))
 
+    # -------------------------
+# TÍTULO (ESTADO x MUNICÍPIO)
+# -------------------------
+    if selected_scope == 'municipal':
+        title_direction = direction_text(selected_direction).replace(
+            'Estado', 'Município'
+        )
+    else:
+        title_direction = direction_text(selected_direction)
+
     fig.update_layout(
         title=build_responsive_title(
-        main_title=f"<b>{direction_text(selected_direction)}, </b>",
-        subtitle=f"<b>{ano_text} ({escopo_text})</b>"
+            main_title=f"<b>{title_direction}, </b>",
+            subtitle=f"<b>{ano_text} ({escopo_text})</b>"
         ),
         margin={"r": 0, "t": 50, "l": 0, "b": 0},
         plot_bgcolor=theme_colors["background_color"],
@@ -201,6 +211,7 @@ def update_exported_sankey(
         font=dict(color=theme_colors["font_color"]),
         template=theme_colors["template"],
     )
+
 
     return fig
 

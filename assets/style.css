@@ -78,12 +78,29 @@ body {
 /* ======================================================
    NAV TABS
 ====================================================== */
+
+.nav-btn {
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.nav-btn.btn-primary {
+  background: #f8fafc;
+  color: var(--primary);
+}
+
+.nav-btn.btn-primary:hover,
+.nav-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+}
 #nav-bar-container {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.7rem 2rem;
-  background: var(--surface);
   border-bottom: 2px solid var(--primary);
   box-shadow: 0 2px 6px rgba(0,0,0,0.02);
 }
@@ -278,4 +295,83 @@ h3, h4, h5, h6 {
   .content-area {
     padding: 1rem;
   }
+}
+
+/* ===============================
+   BASE – Desktop grande (≥1701px)
+   =============================== */
+
+.filter-field {
+    position: relative;
+    padding-top: 26px; /* espaço fixo para o label */
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
+.filter-field .label-flutuante {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    font-size: 0.78rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
+@media (min-width: 1367px) and (max-width: 1700px) {
+
+    .filter-field {
+        padding-top: 26px;
+        font-size: 0.82rem;
+        letter-spacing: 0.65px;
+    }
+
+    .filter-field .label-flutuante {
+        top: -1px;
+        font-size: 0.76rem;
+    }
+}
+
+@media (max-width: 1366px) {
+
+    .filter-field {
+        padding-top: 24px;
+        font-size: 0.78rem;
+        letter-spacing: 0.6px;
+    }
+
+    .filter-field .label-flutuante {
+        top: -2px;
+        font-size: 0.74rem;
+        letter-spacing: 0.5px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .filter-field {
+        padding-top: 0;
+        font-size: 0.9rem;
+    }
+
+    .filter-field .label-flutuante {
+        position: static;
+        margin-bottom: 4px;
+        font-size: 0.85rem;
+        pointer-events: auto;
+    }
+}
+
+#top-filter-bar label {
+    font-weight: 400 !important;
+}
+
+.footer-note {
+    font-size: 18px;
+    text-align: center;
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #2d3033; /* cinza Bootstrap */
+    margin-top: 12px;
 }

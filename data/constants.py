@@ -66,3 +66,47 @@ def direction_text(direction):
             return 'Estado de Residência → Estado de Infecção'
         case _:
             return 'Direção desconhecida'
+        
+
+
+class SankeyDirectionMunicipio(Enum):
+    INFECTION_TO_NOTIFICATION = 0
+    INFECTION_TO_RESIDENCE = 1
+    NOTIFICATION_TO_INFECTION = 2
+    RESIDENCE_TO_INFECTION = 3
+
+
+def direction_columns_municipio(direction):
+    # 🔒 Normalização (Dash-safe)
+    if not isinstance(direction, SankeyDirectionMunicipio):
+        direction = SankeyDirectionMunicipio(int(direction))
+
+    match direction:
+        case SankeyDirectionMunicipio.INFECTION_TO_NOTIFICATION:
+            return 'NOME_INFE', 'NOME_NOTI'
+        case SankeyDirectionMunicipio.INFECTION_TO_RESIDENCE:
+            return 'NOME_INFE', 'NOME_RESI'
+        case SankeyDirectionMunicipio.NOTIFICATION_TO_INFECTION:
+            return 'NOME_NOTI', 'NOME_INFE'
+        case SankeyDirectionMunicipio.RESIDENCE_TO_INFECTION:
+            return 'NOME_RESI', 'NOME_INFE'
+        case _:
+            raise ValueError(f"Direção municipal não tratada: {direction}")
+        
+def direction_text_municipio(direction):
+    # 🔒 Normalização (Dash-safe)
+    if not isinstance(direction, SankeyDirectionMunicipio):
+        direction = SankeyDirectionMunicipio(int(direction))
+
+    match direction:
+        case SankeyDirectionMunicipio.INFECTION_TO_NOTIFICATION:
+            return 'Município de Infecção → Município de Notificação'
+        case SankeyDirectionMunicipio.INFECTION_TO_RESIDENCE:
+            return 'Município de Infecção → Município de Residência'
+        case SankeyDirectionMunicipio.NOTIFICATION_TO_INFECTION:
+            return 'Município de Notificação → Município de Infecção'
+        case SankeyDirectionMunicipio.RESIDENCE_TO_INFECTION:
+            return 'Município de Residência → Município de Infecção'
+        case _:
+            return 'Direção municipal desconhecida'
+

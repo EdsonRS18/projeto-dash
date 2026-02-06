@@ -305,7 +305,8 @@ def update_mapa_importacao(
         mapbox_style="open-street-map",
         mapbox_zoom=4,
         mapbox_center={"lat": centro_lat, "lon": centro_lon},
-        margin={"r": 0, "t": 80, "l": 0, "b": 0},
+        margin={"r": 0, "t": 80, "l": 0, "b": 70},
+
         height=700,
         hovermode='closest',
         title=title_cfg,
@@ -321,6 +322,25 @@ def update_mapa_importacao(
         paper_bgcolor=theme_colors["background_color"],
         font=dict(color=theme_colors["font_color"]),
         template=theme_colors["template"],
+        
+        
     )
+    fig.add_annotation(
+    text=(
+        "<i>Os casos de notificação de municípios fora do estado selecionado não são exibidos no mapa.<br> "
+        "Exemplo: ao selecionar o estado “Pará”, municípios como Manaus aparecerão com 0 notificações.</i>"
+    ),
+    x=0.5,
+    y=-0.10,            # 👈 abaixo do gráfico
+    xref="paper",
+    yref="paper",
+    showarrow=False,
+    align="center",
+    font=dict(
+        size=13,
+        color=theme_colors["font_color"]
+    )
+)
+
 
     return fig

@@ -146,18 +146,19 @@ def layout(df1):
                                 children=[
                                     dbc.Row(
                                         [
-                                            dbc.Col(
-                                                [
-                                                    html.Label(
-                                                        "Estado de Origem (Importação)",
-                                                        className="small fw-bold mb-1"
-                                                    ),
-                                                    dcc.Dropdown(
-                                                        id="estado-dropdown-importacao"
-                                                    ),
-                                                ],
-                                                width=6,
-                                            ),
+                                           dbc.Col(
+    [
+        html.Label(
+            "Estado de Origem (Importação)",
+            className="label-flutuante"
+        ),
+        dcc.Dropdown(
+            id="estado-dropdown-importacao"
+        ),
+    ],
+    width=6,
+    className="filter-field"
+),
                                             dbc.Col(
                                                 [
                                                     html.Label(
@@ -186,17 +187,18 @@ def layout(df1):
                                     dbc.Row(
                                         [
                                             dbc.Col(
-                                                [
-                                                    html.Label(
-                                                        "Estado de Origem (Exportação)",
-                                                        className="small fw-bold mb-1"
-                                                    ),
-                                                    dcc.Dropdown(
-                                                        id="estado-dropdown-exportacao"
-                                                    ),
-                                                ],
-                                                width=6,
-                                            ),
+    [
+        html.Label(
+            "Estado de Origem (Exportação)",
+            className="small mb-1 label-flutuante"
+        ),
+        dcc.Dropdown(
+            id="estado-dropdown-exportacao"
+        ),
+    ],
+    width=6,
+    className="filter-field"
+),
                                             dbc.Col(
                                                 [
                                                     html.Label(
@@ -389,7 +391,7 @@ def layout(df1):
                             html.Div(
                                 id="container-slider-exportacao",
                                 children=[
-                                    html.Hr(className="my-2"),
+                                    
                                     html.Label(
                                         "Número mínimo de notificações (Exportação)",
                                         className="small fw-bold mb-1"

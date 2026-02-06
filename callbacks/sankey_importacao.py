@@ -228,11 +228,18 @@ def update_imported_sankey(
 
     fig = go.Figure(sankey_fig)
 
+    if selected_scope == 'municipal':
+        title_direction = direction_text(selected_direction).replace(
+            'Estado', 'Município'
+        )
+    else:
+        title_direction = direction_text(selected_direction)
+
     fig.update_layout(
         title=build_responsive_title(
-        main_title=f"<b>{direction_text(selected_direction)}, </b>",
-        subtitle=f"<b>{ano_text} ({escopo_text})</b>"
-    ),
+            main_title=f"<b>{title_direction}, </b>",
+            subtitle=f"<b>{ano_text} ({escopo_text})</b>"
+        ),
         margin=dict(r=0, t=50, l=0, b=0),
         plot_bgcolor=theme_colors['background_color'],
         paper_bgcolor=theme_colors['background_color'],

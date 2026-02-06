@@ -9,8 +9,10 @@ def importada_layout():
             dbc.Col([
                 create_loading_component('imported-sankey-graph'),
             ], width=6, className="mb-4", style={"height": "800px"}),
+
             dbc.Col([
                 create_loading_component('map-importacao'),
             ], width=6, className="mb-4"),
         ]),
+
     ], className="fade-in")
