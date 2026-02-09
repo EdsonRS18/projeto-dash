@@ -77,8 +77,8 @@ def update_mapa_importacao(
         source_nome, target_nome = 'NOME_RESI', 'NOME_INFE'
         source_lat, source_lon = 'LATITUDE_RESI', 'LONGITUDE_RESI'
         target_lat, target_lon = 'LATITUDE_INFE', 'LONGITUDE_INFE'
-        label_apenas_origem = "Apenas Residência"
-        label_origem_destino = "Residência e Infecção"
+        label_apenas_origem = "Apenas Reside"
+        label_origem_destino = "Reside e Infecta"
 
     else:
         return go.Figure()
@@ -177,18 +177,7 @@ def update_mapa_importacao(
                 'Estados Diferentes': "#817D7C"
             }
 
-            if selected_direction == SankeyDirection.NOTIFICATION_TO_INFECTION.value:
-                hover_txt = (
-                    "<b>%{customdata[0]}</b> - %{customdata[1]}<br>"
-                    "Notificou: %{customdata[2]} casos<br>"
-                    "Infectou: %{customdata[3]} casos<extra></extra>"
-                )
-            else:
-                hover_txt = (
-                    "<b>%{customdata[0]}</b> - %{customdata[1]}<br>"
-                    "Residiu: %{customdata[2]} casos<br>"
-                    "Infectou: %{customdata[3]} casos<extra></extra>"
-                )
+            
 
             for _, r in df_sel.iterrows():
                 mid_lat = (r[source_lat] + r[target_lat]) / 2

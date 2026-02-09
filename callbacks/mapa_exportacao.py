@@ -86,6 +86,12 @@ def update_mapa_exportacao(
     df['_SRC_NAME'] = df[source_nome]
     df['_TGT_NAME'] = df[target_nome]
 
+    if selected_direction == SankeyDirection.INFECTION_TO_NOTIFICATION.value:
+        label_apenas_destino = "Apenas Notifica"
+
+    elif selected_direction == SankeyDirection.INFECTION_TO_RESIDENCE.value:
+        label_apenas_destino = "Apenas Reside"
+
     # =======================================================
     # 3) Apenas fluxos que SAEM do estado
     # =======================================================
@@ -170,6 +176,7 @@ def update_mapa_exportacao(
                 'Mesmo Estado': "#000000",
                 'Estados Diferentes': "#817D7C"
             }
+            
 
             for _, r in df_sel.iterrows():
                 mid_lat = (r[source_lat] + r[target_lat]) / 2
@@ -221,7 +228,8 @@ def update_mapa_exportacao(
 
         # 🔥 perdeu infecção por causa do filtro
         if origem < (min_notificacoes or 0) and destino > 0:
-            return "Apenas Notifica"
+            return label_apenas_destino
+
 
         if uf == estado_selecionado:
             if origem > 0 and destino > 0:
@@ -230,7 +238,8 @@ def update_mapa_exportacao(
                 return label_apenas_origem
 
         if destino > 0:
-            return "Apenas Notifica"
+            return label_apenas_destino
+
 
         return None
 
@@ -239,14 +248,21 @@ def update_mapa_exportacao(
     cores_nos = {
         label_apenas_origem: '#E74C3C',
         label_origem_destino: "#6103DB",
-        'Apenas Notifica': '#3498DB'
+        label_apenas_destino: '#3498DB'
     }
 
-    hover_txt = (
-        "<b>%{customdata[0]}</b> - %{customdata[1]}<br>"
-        "Infectou: %{customdata[2]} casos<br>"
-        "Notificou: %{customdata[3]} casos<extra></extra>"
-    )
+    if selected_direction == SankeyDirection.INFECTION_TO_NOTIFICATION.value:
+                hover_txt = (
+                    "<b>%{customdata[0]}</b> - %{customdata[1]}<br>"
+                    "Notificou: %{customdata[2]} casos<br>"
+                    "Infectou: %{customdata[3]} casos<extra></extra>"
+                )
+    else:
+                hover_txt = (
+                    "<b>%{customdata[0]}</b> - %{customdata[1]}<br>"
+                    "Residiu: %{customdata[2]} casos<br>"
+                    "Infectou: %{customdata[3]} casos<extra></extra>"
+                )
 
     for tipo in nodes['Tipo'].dropna().unique():
         sub = nodes[nodes['Tipo'] == tipo]
