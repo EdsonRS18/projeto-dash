@@ -94,4 +94,4 @@ from callbacks import (
 # =====================================================
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False, port=80, host='0.0.0.0')
