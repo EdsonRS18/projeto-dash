@@ -7,6 +7,9 @@ def create_loading_component(graph_id):
         type="default",
         children=dcc.Graph(
             id=graph_id,
+            config={
+                "scrollZoom": True
+            },
             className=f"graph-container cursor-{graph_id}",
             style={
                 'height': '800px' if 'map' in graph_id or 'piramide' in graph_id else '800px'

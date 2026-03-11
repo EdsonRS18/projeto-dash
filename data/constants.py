@@ -110,3 +110,14 @@ def direction_text_municipio(direction):
         case _:
             return 'Direção municipal desconhecida'
 
+uf_sigla_para_codigo = {
+    "RO": "11",
+    "AC": "12",
+    "AM": "13",
+    "RR": "14",
+    "PA": "15",
+    "AP": "16",
+    "TO": "17",
+    "MA": "21",
+    "MT": "51"
+}

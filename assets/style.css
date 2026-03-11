@@ -44,7 +44,12 @@ body {
   z-index: 1000;
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow);
+
+  display: flex;
+  justify-content: center; /* centraliza horizontal */
+  align-items: center;     /* centraliza vertical */
 }
+
 
 .header-logo {
   height: 50px;

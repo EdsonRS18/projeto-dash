@@ -67,19 +67,35 @@ def update_mapa_exportacao(
         source_nome, target_nome = 'NOME_INFE', 'NOME_NOTI'
         source_lat, source_lon = 'LATITUDE_INFE', 'LONGITUDE_INFE'
         target_lat, target_lon = 'LATITUDE_NOTI', 'LONGITUDE_NOTI'
-        label_apenas_origem = "Apenas Infecta"
-        label_origem_destino = "Infecta e Notifica"
+        label_apenas_origem = "local de infecção"
+        label_origem_destino = "local de infecção e notificação"
 
     elif selected_direction == SankeyDirection.INFECTION_TO_RESIDENCE.value:
         source_col, target_col = 'SIGLA_INFE', 'SIGLA_RESI'
         source_nome, target_nome = 'NOME_INFE', 'NOME_RESI'
         source_lat, source_lon = 'LATITUDE_INFE', 'LONGITUDE_INFE'
         target_lat, target_lon = 'LATITUDE_RESI', 'LONGITUDE_RESI'
-        label_apenas_origem = "Apenas Infecta"
-        label_origem_destino = "Infecta e Reside"
+        label_apenas_origem = "local de infecção"
+        label_origem_destino = "local de infecção e residencia"
 
     else:
         return go.Figure()
+    
+
+    if selected_direction == SankeyDirection.INFECTION_TO_NOTIFICATION.value:
+        edge_source_label = "Município de Infecção"
+        edge_target_label = "Município de Notificação"
+        edge_cases_label = "Casos exportados"
+    else:
+        edge_source_label = "Município de Infecção"
+        edge_target_label = "Município de Residência"
+        edge_cases_label = "Casos exportados"
+    hover_edge_template = (
+        f"<b>{edge_source_label}:</b> %{{customdata[1]}}<br>"
+        f"<b>{edge_target_label}:</b> %{{customdata[2]}}<br>"
+        f"<b>{edge_cases_label}:</b> %{{customdata[0]:,.0f}}"
+        "<extra></extra>"
+)
 
     df[source_col] = df[source_col].str.upper()
     df[target_col] = df[target_col].str.upper()
@@ -87,16 +103,26 @@ def update_mapa_exportacao(
     df['_TGT_NAME'] = df[target_nome]
 
     if selected_direction == SankeyDirection.INFECTION_TO_NOTIFICATION.value:
-        label_apenas_destino = "Apenas Notifica"
+        label_apenas_destino = "Local de notificação"
 
     elif selected_direction == SankeyDirection.INFECTION_TO_RESIDENCE.value:
-        label_apenas_destino = "Apenas Reside"
+        label_apenas_destino = "local de residência"
 
     # =======================================================
     # 3) Apenas fluxos que SAEM do estado
     # =======================================================
     df = df[df[source_col] == estado_selecionado]
     df = df[df['_SRC_NAME'] != df['_TGT_NAME']]
+
+    total_origem_real = (
+        df.groupby(['_SRC_NAME'], as_index=True)['QTD_NOTIFICACOES']
+        .sum()
+    )
+
+    total_destino_real = (
+        df.groupby(['_TGT_NAME'], as_index=True)['QTD_NOTIFICACOES']
+        .sum()
+    )
 
     # =======================================================
     # 4) 🔥 FILTRO DO SLIDER (IGUAL AO SANKEY / IMPORTAÇÃO)
@@ -148,6 +174,8 @@ def update_mapa_exportacao(
     # =======================================================
     # 7) ARESTAS
     # =======================================================
+    arestas_existem = False
+
     if municipio_ativo:
         df_sel = df[df['_SRC_NAME'] == municipio_ativo]
 
@@ -172,11 +200,24 @@ def update_mapa_exportacao(
                 axis=1
             )
 
+            arestas_existem = True
+
             cores_relacao = {
                 'Mesmo Estado': "#000000",
                 'Estados Diferentes': "#817D7C"
             }
-            
+
+       
+            for tipo, cor in cores_relacao.items():
+                fig.add_trace(go.Scattermapbox(
+                    lat=[None],
+                    lon=[None],
+                    mode='lines',
+                    line=dict(width=3, color=cor),
+                    name=tipo,
+                    showlegend=True,
+                    hoverinfo='skip'
+                ))
 
             for _, r in df_sel.iterrows():
                 mid_lat = (r[source_lat] + r[target_lat]) / 2
@@ -186,17 +227,18 @@ def update_mapa_exportacao(
                     lat=[r[source_lat], mid_lat, r[target_lat]],
                     lon=[r[source_lon], mid_lon, r[target_lon]],
                     mode='lines+markers',
-                    line=dict(width=3, color=cores_relacao[r['Tipo_Relacao']]),
-                    marker=dict(size=0),
-                    customdata=[[r['QTD_NOTIFICACOES'], r['_SRC_NAME'], r['_TGT_NAME']]] * 3,
-                    hovertemplate=(
-                        "<b>Municipio de Infecção:</b> %{customdata[1]}<br>"
-                        "<b>Municipio de Notificação:</b> %{customdata[2]}<br>"
-                        "<b>Casos exportados:</b> %{customdata[0]:,.0f}"
-                        "<extra></extra>"
+                    line=dict(
+                        width=3,
+                        color=cores_relacao[r['Tipo_Relacao']]
                     ),
+                    marker=dict(size=0),
+                    customdata=[
+                        [r['QTD_NOTIFICACOES'], r['_SRC_NAME'], r['_TGT_NAME']]
+                    ] * 3,
+                    hovertemplate=hover_edge_template,
                     showlegend=False
                 ))
+
 
     # =======================================================
     # 8) NÓS (RECONSTRUÇÃO IGUAL AO MAPA DE IMPORTAÇÃO)
@@ -218,8 +260,9 @@ def update_mapa_exportacao(
         })
     ]).drop_duplicates(subset=['NOME', 'LAT', 'LON'])
 
-    nodes['ORIGEM_SUM'] = nodes['NOME'].map(soma_origem).fillna(0).astype(int)
-    nodes['DESTINO_SUM'] = nodes['NOME'].map(soma_destino).fillna(0).astype(int)
+    nodes['ORIGEM_SUM'] = nodes['NOME'].map(total_origem_real).fillna(0).astype(int)
+    nodes['DESTINO_SUM'] = nodes['NOME'].map(total_destino_real).fillna(0).astype(int)
+
 
     def class_tipo(r):
         origem = r['ORIGEM_SUM']
@@ -254,14 +297,16 @@ def update_mapa_exportacao(
     if selected_direction == SankeyDirection.INFECTION_TO_NOTIFICATION.value:
                 hover_txt = (
                     "<b>%{customdata[0]}</b> - %{customdata[1]}<br>"
-                    "Notificou: %{customdata[2]} casos<br>"
-                    "Infectou: %{customdata[3]} casos<extra></extra>"
+                    "%{customdata[2]} infecções<extra></extra><br>"
+                    "%{customdata[3]} notificações<br>"
+                    
                 )
     else:
                 hover_txt = (
                     "<b>%{customdata[0]}</b> - %{customdata[1]}<br>"
-                    "Residiu: %{customdata[2]} casos<br>"
-                    "Infectou: %{customdata[3]} casos<extra></extra>"
+                    "%{customdata[2]} infecções<extra></extra><br>"
+                    "%{customdata[3]} casos em residentes<br>"
+                    
                 )
 
     for tipo in nodes['Tipo'].dropna().unique():
@@ -282,8 +327,15 @@ def update_mapa_exportacao(
     centro_lat = nodes['LAT'].mean() if not nodes.empty else -14.235
     centro_lon = nodes['LON'].mean() if not nodes.empty else -51.925
 
+        
+    if municipio_ativo and arestas_existem:
+
+        main_title = f"<b>Exportações a partir de {municipio_ativo} ({estado_selecionado})</b>"
+    else:
+        main_title = f"<b>Exportações a partir de {estado_selecionado}<b>"
+
     title_cfg = build_responsive_title(
-    main_title=f"<b>Exportações a partir de {estado_selecionado}<b>",
+    main_title=main_title,
     subtitle=f"<b>Ano {selected_year}<b>"
 )
 

@@ -30,9 +30,9 @@ def update_corredor_graph(selected_year, selected_city):
             )
         )
 
-    if selected_city == "Todos":
-        df = store.df1
+    df = store.df1  # <-- defina uma vez, fora da condição
 
+    if selected_city == "Todos":
         df_filtered = df.copy()
         selected_city_name = "Todos os municípios"
     else:

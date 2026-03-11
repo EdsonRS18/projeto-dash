@@ -12,7 +12,7 @@ def layout(df1):
         # CSS customizado
         html.Link(
             rel='stylesheet',
-            href='/assets/custom_styles.css'
+            href='/assets/style.css'
         ),
 
         # Stores para gerenciamento de estado
@@ -369,15 +369,16 @@ def layout(df1):
                                     dcc.Slider(
                                         id='min-notificacoes-slider-importacao',
                                         min=1,
-                                        max=1000,
+                                        max=500,
                                         step=1,
                                         value=1,
                                         marks={
                                             1: '1',
+                                            10:'10',
                                             50: '50',
                                             100: '100',
                                             500: '500',
-                                            1000: '1000'
+                                            
                                         },
                                         tooltip={
                                             "placement": "bottom",
@@ -399,15 +400,16 @@ def layout(df1):
                                     dcc.Slider(
                                         id='min-notificacoes-slider-exportacao',
                                         min=1,
-                                        max=1000,
+                                        max=500,
                                         step=1,
                                         value=1,
                                         marks={
                                             1: '1',
+                                            10:'10',
                                             50: '50',
                                             100: '100',
                                             500: '500',
-                                            1000: '1000'
+                                            
                                         },
                                         tooltip={
                                             "placement": "bottom",
