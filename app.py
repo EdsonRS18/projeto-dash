@@ -2,6 +2,7 @@ from server import app
 from utils.visualization import build_responsive_title, get_theme_colors
 from components.loading import create_loading_component
 from domain.filters import get_available_states
+
 import pandas as pd
 from pathlib import Path
 import os
@@ -13,10 +14,13 @@ import os
 from data.geojson_loader import load_geojson
 from data.csv_loader import load_csv
 from data import store
-from pathlib import Path
 from itertools import chain
 
+# =====================================================
+# Exposição do servidor WSGI
+# =====================================================
 
+server = app.server
 # =====================================================
 # CARREGAMENTO DOS GEOJSONs
 # =====================================================
