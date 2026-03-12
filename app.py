@@ -2,7 +2,8 @@ from server import app
 from utils.visualization import build_responsive_title, get_theme_colors
 from components.loading import create_loading_component
 from domain.filters import get_available_states
-
+import pandas as pd
+from pathlib import Path
 # ---------------------------------------------------
 # Imports de dados e armazenamento
 # ---------------------------------------------------
@@ -58,9 +59,16 @@ store.geojson_municipios_brasil = {
 # CARREGAMENTO DO CSV
 # =====================================================
 
-df1 = load_csv("df_geografico_finalizado2.csv")
-store.df1 = df1
 
+data_parts_dir = Path(__file__).resolve().parent / "datasets" / "data_parts"
+
+arquivos_partes = sorted(data_parts_dir.glob("df_parte_*.csv"))
+
+dfs = [load_csv(file) for file in arquivos_partes]
+
+df1 = pd.concat(dfs, ignore_index=True)
+
+store.df1 = df1
 
 # =====================================================
 # LAYOUT PRINCIPAL
