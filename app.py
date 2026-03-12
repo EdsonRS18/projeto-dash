@@ -4,6 +4,8 @@ from components.loading import create_loading_component
 from domain.filters import get_available_states
 import pandas as pd
 from pathlib import Path
+import os
+
 # ---------------------------------------------------
 # Imports de dados e armazenamento
 # ---------------------------------------------------
@@ -102,4 +104,8 @@ from callbacks import (
 # =====================================================
 
 if __name__ == '__main__':
-    app.run_server(debug=False, port=80, host='0.0.0.0')
+    app.run_server(
+        debug=False,
+        host='0.0.0.0',
+        port=int(os.environ.get("PORT", 8050))
+    )
