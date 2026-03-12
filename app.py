@@ -1,26 +1,41 @@
-from server import app
+import os
+from pathlib import Path
+from itertools import chain
+
+import dash
+import dash_bootstrap_components as dbc
+import pandas as pd
+
+# =====================================================
+# INSTÂNCIA DA APLICAÇÃO DASH
+# =====================================================
+
+app = dash.Dash(
+    __name__,
+    suppress_callback_exceptions=True,
+    external_stylesheets=[
+        dbc.themes.BOOTSTRAP,
+        "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    ]
+)
+
+# Servidor WSGI (usado no deploy)
+server = app.server
+
+
+# =====================================================
+# IMPORTS INTERNOS DO PROJETO
+# =====================================================
+
 from utils.visualization import build_responsive_title, get_theme_colors
 from components.loading import create_loading_component
 from domain.filters import get_available_states
 
-import pandas as pd
-from pathlib import Path
-import os
-
-# ---------------------------------------------------
-# Imports de dados e armazenamento
-# ---------------------------------------------------
-
 from data.geojson_loader import load_geojson
 from data.csv_loader import load_csv
 from data import store
-from itertools import chain
 
-# =====================================================
-# Exposição do servidor WSGI
-# =====================================================
 
-server = app.server
 # =====================================================
 # CARREGAMENTO DOS GEOJSONs
 # =====================================================
@@ -42,7 +57,10 @@ store.geojson_municipios_por_uf = {}
 geojson_dir = Path(__file__).resolve().parent / "geojson"
 
 for file in geojson_dir.glob("*.json"):
-    if file.stem.isdigit():  # garante que é 11.json, 12.json, etc.
+
+    # garante que arquivos seguem padrão 11.json, 12.json etc.
+    if file.stem.isdigit():
+
         codigo_uf = file.stem
         store.geojson_municipios_por_uf[codigo_uf] = load_geojson(file.name)
 
@@ -55,7 +73,8 @@ store.geojson_municipios_brasil = {
     "type": "FeatureCollection",
     "features": list(
         chain.from_iterable(
-            g["features"] for g in store.geojson_municipios_por_uf.values()
+            g["features"]
+            for g in store.geojson_municipios_por_uf.values()
         )
     )
 }
@@ -64,7 +83,6 @@ store.geojson_municipios_brasil = {
 # =====================================================
 # CARREGAMENTO DO CSV
 # =====================================================
-
 
 data_parts_dir = Path(__file__).resolve().parent / "datasets" / "data_parts"
 
@@ -76,11 +94,13 @@ df1 = pd.concat(dfs, ignore_index=True)
 
 store.df1 = df1
 
+
 # =====================================================
 # LAYOUT PRINCIPAL
 # =====================================================
 
 from layouts.base import layout
+
 app.layout = layout(df1)
 
 
@@ -104,12 +124,13 @@ from callbacks import (
 
 
 # =====================================================
-# EXECUÇÃO
+# EXECUÇÃO LOCAL
 # =====================================================
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+
     app.run_server(
         debug=False,
-        host='0.0.0.0',
+        host="0.0.0.0",
         port=int(os.environ.get("PORT", 8050))
     )
